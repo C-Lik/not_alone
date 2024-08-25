@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /*!
     \brief The current level map.
@@ -51,6 +52,7 @@ public class Map {
         String pathToMap = "";
 
         assert fileList != null;
+        Arrays.sort(fileList);
         for (String str : fileList) {
             if (str.contains(".txt")) pathToMap = "/textures/" + mapName + "/" + str;
             else if (str.contains(mapName)) {
