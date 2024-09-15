@@ -5,19 +5,12 @@ import MainGame.Game;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-/*!
-    \brief Manages the state of pressed buttons for control.
- */
 public class KeyHandler implements KeyListener {
 
     public static boolean upPressed, leftPressed, rightPressed, attackPressed, exitPressed, killEnemiesPressed;
 
-    //! No-Args constructor.
     public KeyHandler() {}
 
-    /*!
-     Sets the static variables to true when the corresponding button, representing its respective state, is pressed.
-     */
     @Override
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
@@ -44,9 +37,6 @@ public class KeyHandler implements KeyListener {
         }
     }
 
-    /*!
-     Sets the static variables to false when the corresponding button, representing its respective state, is released.
-     */
     @Override
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();

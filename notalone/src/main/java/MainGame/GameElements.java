@@ -2,12 +2,20 @@ package MainGame;
 
 import Audio.SoundLibrary;
 import Control.Collision;
+import Database.DBHandler;
+import Database.EnemyEntity;
+import Database.ItemEntity;
 import Entity.*;
 import Exceptions.CriticalExceptionHandler;
-import GameState.*;
-import Input.*;
-import Items.*;
+import GameState.GameOverState;
+import GameState.MenuOption;
+import GameState.PlayState;
+import GameState.WinState;
 import Graphics.Map;
+import Input.KeyHandler;
+import Items.ItemBlock;
+import Items.Portal;
+import Items.Potion;
 
 import java.awt.*;
 import java.io.IOException;
@@ -21,42 +29,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class GameElements {
 
-    public Player player;
-    private final Map map;
     public static DBHandler level;
+    private final Map map;
+    private final Collision collCheck;
+    public Player player;
     public Portal portal;
     public CopyOnWriteArrayList<ItemBlock> items = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Enemy> enemies = new CopyOnWriteArrayList<>();
     public boolean hitPortal = false;
-    private final Collision collCheck;
 
-    /*!
-        \brief Constructor.
-
-        Set references to Singleton class instances:
-        \li \ref Collision
-        \li \ref Player
-        \li \ref CurrentLevel
-
-        Constructs a new map.
-     */
-    public GameElements() {
+   public GameElements() {
         collCheck = Collision.getInstance();
         player = Player.getInstance();
         level = DBHandler.getInstance();
         map = new Map();
     }
 
-    /*!
-        \brief  Update.
-
-        Calls the following methods:
-        \li \ref playSound();
-        \li \ref updateElements();
-        \li \ref updatePortal();
-        \li \ref updateWinOrNextMap();
-        \li \ref checkIfGameOver();
-     */
     public void update() {
         playSound();
         updateElements();
@@ -97,7 +85,7 @@ public class GameElements {
         \brief Calls the update function for the portal if the enemy list is empty.
      */
     private void updatePortal() {
-        if (enemies.size() != 0) {
+        if (!enemies.isEmpty()) {
             if (KeyHandler.killEnemiesPressed)
                 enemies.clear();
         } else {
@@ -153,8 +141,8 @@ public class GameElements {
         if (Game.option == MenuOption.newGame) {
             level.updateLevel();
         } else if (Game.option == MenuOption.loadGame) {
-            level.readLevel();
-            Game.currentMapNumber = Integer.parseInt(level.getMapName().substring(3));
+            level.loadLevel();
+            Game.currentMapNumber = level.getMapId();
             player.increaseHitPowerBy(-(Game.currentMapNumber - 1) * 5);
         } else {
             if (Game.currentMapNumber < Game.MAPS_NUMBER) {
@@ -162,10 +150,10 @@ public class GameElements {
             }
             level.updateLevel();
         }
-        map.loadMap(level.getMapName());
+        map.loadMap("map" + level.getMapId());
         createItems();
         createEnemies();
-        level.clearLists();
+        level.clearOldData();
 
         SoundLibrary.gameSound.stop();
         if (Game.currentMapNumber != 0)
@@ -180,7 +168,7 @@ public class GameElements {
             item.draw(g);
         for (Entity entity : enemies)
             entity.draw(g);
-        if (enemies.size() == 0) {
+        if (enemies.isEmpty()) {
             portal.draw(g);
         }
     }
@@ -188,12 +176,12 @@ public class GameElements {
     //! \brief Creates the list of elements based on the data read from the database.
     private void createItems() {
         Random rand = new Random();
-        LinkedHashMap<String, Vector<Vector<Integer>>> list = level.getItemsList();
+        LinkedHashMap<String, Vector<ItemEntity>> list = level.getItemsList();
         for (String item : list.keySet()) {
-            Vector<Vector<Integer>> indexes = list.get(item);
-            for (Vector<Integer> index : indexes) {
-                int x = index.get(0) * Game.tileSize;
-                int y = index.get(1) * Game.tileSize;
+            Vector<ItemEntity> entities = list.get(item);
+            for (ItemEntity entity : entities) {
+                int x = entity.indexX() * Game.tileSize;
+                int y = entity.indexY() * Game.tileSize;
                 if (item.equals("potion")) {
                     items.add(new Potion(x, y, rand.nextInt(2) + 1));
                 }
@@ -206,16 +194,16 @@ public class GameElements {
 
     //! \brief Creates the list of enemies based on the data read from the database.
     private void createEnemies() {
-        LinkedHashMap<String, Vector<Vector<Integer>>> list = level.getEnemiesList();
+        LinkedHashMap<String, Vector<EnemyEntity>> list = level.getEnemiesList();
 
         for (String item : list.keySet()) {
-            Vector<Vector<Integer>> indexes = list.get(item);
+            Vector<EnemyEntity> entities = list.get(item);
 
-            for (Vector<Integer> index : indexes) {
-                int x = index.get(0) * Game.tileSize;
-                int y = index.get(1) * Game.tileSize;
-                int left = index.get(2) * Game.tileSize;
-                int right = index.get(3) * Game.tileSize;
+            for (EnemyEntity entity : entities) {
+                int x = entity.indexX() * Game.tileSize;
+                int y = entity.indexY() * Game.tileSize;
+                int left = entity.leftLimit() * Game.tileSize;
+                int right = entity.rightLimit() * Game.tileSize;
 
                 Enemy tempEnemy = null;
 
@@ -225,10 +213,10 @@ public class GameElements {
                 if (item.equals("ghoul")) {
                     tempEnemy = new Ghoul(x, y);
                 }
-                if (item.equals("hellDog")) {
+                if (item.equals("hell_dog")) {
                     tempEnemy = new HellDog(x, y);
-
                 }
+
                 if (tempEnemy != null) {
                     tempEnemy.setBounds(left, right);
                     tempEnemy.increaseHitPowerBy(-(Game.currentMapNumber - 1) * 5);

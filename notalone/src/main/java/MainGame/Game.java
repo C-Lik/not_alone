@@ -1,10 +1,10 @@
 package MainGame;
 
 import Audio.SoundLibrary;
+import Database.DBHandler;
 import GameState.GameState;
-import GameState.MenuState;
 import GameState.MenuOption;
-import Input.DBHandler;
+import GameState.MenuState;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
@@ -14,35 +14,29 @@ import java.awt.image.BufferStrategy;
     \note Implements the Singleton design pattern.
  */
 public class Game implements Runnable {
-    private static Game instance = null;
-
-    private final GameWindow window;
-    private boolean runState;
-    private Thread gameThread;
-    private BufferStrategy bs;
-    public Graphics g;
-
     public static final int tileSize = 32;
     public static final int wndRows = 18;
     public static final int wndCols = 36;
     public static final int WIDTH = wndCols * tileSize;
     public static final int HEIGHT = wndRows * tileSize;
-
     public final static int MAPS_NUMBER = 3;
     public static int currentMapNumber;
     public static boolean SoundOn = true;
-
-    public GameState state;
     public static MenuOption option;
+    private static Game instance = null;
+    private final GameWindow window;
+    public Graphics g;
+    public GameState state;
+    private boolean runState;
+    private Thread gameThread;
+    private BufferStrategy bs;
 
-    //! \brief Private constructor that initializes a new window and sets the menu state.
     private Game() {
         window = new GameWindow("Not Alone", WIDTH, HEIGHT);
         state = MenuState.getInstance();
         runState = false;
     }
 
-    //! Gets the class instance.
     public static Game getInstance() {
         if (instance == null) {
             instance = new Game();
@@ -50,7 +44,6 @@ public class Game implements Runnable {
         return instance;
     }
 
-    //! \brief Calls the functions \ref update() and \ref draw().
     public void run() {
         long oldTime = System.nanoTime();
         long currentTime;
@@ -68,7 +61,6 @@ public class Game implements Runnable {
         }
     }
 
-    //! \brief Creates and starts a new thread of execution.
     public synchronized void startGame() {
         if (!runState) {
             runState = true;
@@ -77,14 +69,13 @@ public class Game implements Runnable {
         }
     }
 
-    //! \brief Closes the game, used sounds, and the database (if it was opened).
     public synchronized void stopGame() {
         if (runState) {
             runState = false;
 
             SoundLibrary.closeSounds();
 
-            if (DBHandler.checkIfInstanceIsNull())
+            if (DBHandler.isInstanceIsNull())
                 DBHandler.getInstance().close();
 
             try {
@@ -95,12 +86,10 @@ public class Game implements Runnable {
         }
     }
 
-    //! \brief Calls the update function for the current state.
     private void update() {
         state.update();
     }
 
-    //! \brief Calls the draw function for the current state, which renders the elements.
     private void draw() {
         bs = window.getCanvas().getBufferStrategy();
         if (bs == null) {

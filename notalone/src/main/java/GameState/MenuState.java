@@ -2,7 +2,7 @@ package GameState;
 
 import Audio.SoundLibrary;
 import Exceptions.CriticalExceptionHandler;
-import Input.DBHandler;
+import Database.DBHandler;
 import MainGame.Game;
 import Graphics.Assets;
 
@@ -41,8 +41,8 @@ public class MenuState extends GameState {
         info = new Rectangle(1062, 30, 57, 57);
         music = new Rectangle(1062, 96, 57, 57);
         DBHandler level = DBHandler.getInstance();
-        level.readLevel();
-        wasWin = (level.getItemsList().size() == 0);
+        level.loadLevel();
+        wasWin = level.won();
     }
 
     /*!
