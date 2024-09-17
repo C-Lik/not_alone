@@ -18,11 +18,6 @@ public class Animation {
     private final BufferedImage[] images;   //contains all images of an animation
     private BufferedImage currentImg;       //current image
 
-    /*!
-        \brief Parameterized constructor.
-
-        Sets the animation speed and images array of the animation.
-     */
     public Animation(int speed, BufferedImage[] args) {
         this.speed = speed;
         framesNumber = args.length;

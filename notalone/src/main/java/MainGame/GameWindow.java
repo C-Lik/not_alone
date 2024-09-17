@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferStrategy;
 
 /*! \brief The game window.
     \note Implements the Singleton design pattern.
@@ -36,9 +37,10 @@ public class GameWindow {
         frame.setVisible(true);
 
         canvas = new Canvas();
-        canvas.setPreferredSize(new Dimension(width, height));
-        canvas.setMaximumSize(new Dimension(width, height));
-        canvas.setMinimumSize(new Dimension(width, height));
+        Dimension size = new Dimension(width, height);
+        canvas.setPreferredSize(size);
+        canvas.setMaximumSize(size);
+        canvas.setMinimumSize(size);
 
         frame.add(canvas);
         frame.pack();
@@ -48,19 +50,20 @@ public class GameWindow {
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 Game.getInstance().stopGame();
-
             }
         });
         canvas.addMouseListener(MouseHandler.getInstance());
     }
 
-    //! Returns the canvas of the window.
-    public Canvas getCanvas() {
-        return canvas;
+    public BufferStrategy getCanvasBufferStrategy() {
+        return canvas.getBufferStrategy();
     }
 
-    //! Returns the frame of the window.
-    public Frame getFrame() {
-        return frame;
+    public void createCanvasBufferStrategy(int numBuffers) {
+        canvas.createBufferStrategy(numBuffers);
+    }
+
+    public void requestWindowFocus() {
+        frame.requestFocusInWindow();
     }
 }

@@ -2,7 +2,7 @@ package MainGame;
 
 import Audio.SoundLibrary;
 import Control.Collision;
-import Database.DBHandler;
+import Database.DBGame;
 import Database.EnemyEntity;
 import Database.ItemEntity;
 import Entity.*;
@@ -29,7 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class GameElements {
 
-    public static DBHandler level;
+    public static DBGame dbGame;
     private final Map map;
     private final Collision collCheck;
     public Player player;
@@ -41,7 +41,7 @@ public class GameElements {
    public GameElements() {
         collCheck = Collision.getInstance();
         player = Player.getInstance();
-        level = DBHandler.getInstance();
+        dbGame = DBGame.getInstance();
         map = new Map();
     }
 
@@ -67,7 +67,7 @@ public class GameElements {
         if (!hitPortal && player.getHitBox().intersects(portal.hitBox)) {
             if (Game.currentMapNumber == Game.MAPS_NUMBER) {
                 SoundLibrary.gameSound.stop();
-                level.updateWin();
+                dbGame.updateWin();
                 PlayState.wasWin = true;
                 Game.getInstance().state = WinState.getInstance();
             } else {
@@ -85,11 +85,11 @@ public class GameElements {
         \brief Calls the update function for the portal if the enemy list is empty.
      */
     private void updatePortal() {
-        if (!enemies.isEmpty()) {
+        if (enemies.isEmpty()) {
+            portal.update();
+        } else {
             if (KeyHandler.killEnemiesPressed)
                 enemies.clear();
-        } else {
-            portal.update();
         }
     }
 
@@ -114,7 +114,6 @@ public class GameElements {
         }
     }
 
-    //! \brief Plays the sound if it is not disabled.
     private void playSound() {
         if (Game.SoundOn)
             SoundLibrary.gameSound.loopPlaying();
@@ -122,16 +121,6 @@ public class GameElements {
             SoundLibrary.gameSound.stop();
     }
 
-    /*!
-        \brief Resets the elements.
-
-        Clears the references to enemies and items.\n
-        Calls the reset function for the player.\n
-        Stops the sound of the previous map and sets the current one.\n
-        Calls the functions for updating the level/reading the level.\n
-        Loads a new map corresponding to the current level.\n
-        Creates the enemies and beneficial items.
-     */
     public void reset() throws IOException {
         items.clear();
         enemies.clear();
@@ -139,28 +128,27 @@ public class GameElements {
         hitPortal = false;
 
         if (Game.option == MenuOption.newGame) {
-            level.updateLevel();
+            dbGame.updateLevel();
         } else if (Game.option == MenuOption.loadGame) {
-            level.loadLevel();
-            Game.currentMapNumber = level.getMapId();
+            dbGame.loadLevel();
+            Game.currentMapNumber = dbGame.getMapId();
             player.increaseHitPowerBy(-(Game.currentMapNumber - 1) * 5);
         } else {
             if (Game.currentMapNumber < Game.MAPS_NUMBER) {
                 Game.currentMapNumber++;
             }
-            level.updateLevel();
+            dbGame.updateLevel();
         }
-        map.loadMap("map" + level.getMapId());
+        map.loadMap("map" + dbGame.getMapId());
         createItems();
         createEnemies();
-        level.clearOldData();
+        dbGame.clearOldData();
 
         SoundLibrary.gameSound.stop();
         if (Game.currentMapNumber != 0)
             SoundLibrary.gameSound.setClip("map" + Game.currentMapNumber + "Sound.wav");
     }
 
-    //! \brief Calls the drawing functions for each element.
     public void draw(Graphics g) {
         map.draw(g);
         player.draw(g);
@@ -176,7 +164,7 @@ public class GameElements {
     //! \brief Creates the list of elements based on the data read from the database.
     private void createItems() {
         Random rand = new Random();
-        LinkedHashMap<String, Vector<ItemEntity>> list = level.getItemsList();
+        LinkedHashMap<String, Vector<ItemEntity>> list = dbGame.getItemsList();
         for (String item : list.keySet()) {
             Vector<ItemEntity> entities = list.get(item);
             for (ItemEntity entity : entities) {
@@ -194,7 +182,7 @@ public class GameElements {
 
     //! \brief Creates the list of enemies based on the data read from the database.
     private void createEnemies() {
-        LinkedHashMap<String, Vector<EnemyEntity>> list = level.getEnemiesList();
+        LinkedHashMap<String, Vector<EnemyEntity>> list = dbGame.getEnemiesList();
 
         for (String item : list.keySet()) {
             Vector<EnemyEntity> entities = list.get(item);

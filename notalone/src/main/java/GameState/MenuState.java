@@ -2,7 +2,7 @@ package GameState;
 
 import Audio.SoundLibrary;
 import Exceptions.CriticalExceptionHandler;
-import Database.DBHandler;
+import Database.DBGame;
 import MainGame.Game;
 import Graphics.Assets;
 
@@ -40,7 +40,7 @@ public class MenuState extends GameState {
         exit = new Rectangle(490, 387, 170, 57);
         info = new Rectangle(1062, 30, 57, 57);
         music = new Rectangle(1062, 96, 57, 57);
-        DBHandler level = DBHandler.getInstance();
+        DBGame level = DBGame.getInstance();
         level.loadLevel();
         wasWin = level.won();
     }
@@ -74,6 +74,9 @@ public class MenuState extends GameState {
             // reset the option
             Game.option = MenuOption.none;
         } else if (buttonWasClicked(load)) {
+            if (wasWin)
+                return;
+
             Game.option = MenuOption.loadGame;
             PlayState state = PlayState.getInstance();
             try {
@@ -81,7 +84,7 @@ public class MenuState extends GameState {
             } catch (Exception e) {
                 CriticalExceptionHandler.handle(e);
             }
-            wasWin = state.elements.items.isEmpty();
+            wasWin = state.elements.enemies.isEmpty();
             if (!wasWin) {
                 SoundLibrary.menu.stop();
                 Game.getInstance().state = PlayState.getInstance();

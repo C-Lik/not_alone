@@ -29,7 +29,6 @@ public class Map {
     public static final int worldWidth = cols * Game.tileSize;
     private final Camera camera = Camera.getInstance();
 
-    //! \brief No-Args constructor.
     public Map() {}
 
     /*!
@@ -56,7 +55,7 @@ public class Map {
         for (String str : fileList) {
             if (str.contains(".txt")) pathToMap = "/textures/" + mapName + "/" + str;
             else if (str.contains(mapName)) {
-                mapPlans.add(Image.LoadImage("/textures/" + mapName + "/" + str));
+                mapPlans.add(Image.loadImage("/textures/" + mapName + "/" + str));
             }
         }
 
@@ -78,8 +77,9 @@ public class Map {
 
     //! \brief Function that updates the position of each block constructed in the \ref loadMap(String) function.
     public void update() {
-        for (Block block : gameMap)
+        for (Block block : gameMap) {
             block.update();
+        }
     }
 
     /*!
@@ -102,7 +102,7 @@ public class Map {
             int height = mapPlans.get(i).getHeight() * 2;
             int yPos = Game.HEIGHT - height;
 
-            int xPos = (int) Math.abs(camera.getCamera() * parallaxSpeed / 2);
+            int xPos = (int) Math.abs(camera.getCameraXAxis() * parallaxSpeed / 2);
             BufferedImage img = mapPlans.get(i).getSubimage(xPos, 0, Game.WIDTH / 2, height / 2);
             g.drawImage(img, 0, yPos, Game.WIDTH, height, null);
         }

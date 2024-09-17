@@ -20,22 +20,11 @@ public class WinState extends GameState {
     private static final Sound winGame = new Sound("winGame.wav");
     private final Rectangle back;
 
-    /*!
-      \brief Private constructor.
-
-      Sets the dimensions, position, and specific image of the button in the win state.
-   */
     private WinState() {
         back = new Rectangle(20, 20, 57, 57);
         image = Assets.getInstance().win;
     }
 
-    /*!
-        \brief Update.
-
-        This method checks if the "Back" button or the ESC key has been pressed, and if so, it
-        transitions to the Menu state (\ref MenuState).
-     */
     @Override
     public void update() {
         if (buttonWasClicked(back) || KeyHandler.exitPressed) {

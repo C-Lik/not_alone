@@ -5,9 +5,9 @@ import Control.Camera;
 import java.awt.*;
 
 public abstract class ItemBlock {
-    private final static Camera camera = Camera.getInstance();
     public Rectangle hitBox;
     protected int x, y, benefit;
+    private final static Camera camera = Camera.getInstance();
 
     public ItemBlock(int xPos, int yPos) {
         this.x = xPos;
@@ -15,7 +15,7 @@ public abstract class ItemBlock {
     }
 
     public void update() {
-        hitBox.x = camera.getCamera() + this.x;
+        hitBox.x = camera.getCameraXAxis() + this.x;
     }
 
     public abstract void draw(Graphics g);

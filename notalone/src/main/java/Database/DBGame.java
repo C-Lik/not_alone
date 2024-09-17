@@ -8,26 +8,26 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Vector;
 
-public class DBHandler {
+public class DBGame {
 
-    private static DBHandler instance = null;
+    private static DBGame instance = null;
     private final LinkedHashMap<String, Vector<EnemyEntity>> enemiesList = new LinkedHashMap<>();
     private final LinkedHashMap<String, Vector<ItemEntity>> itemsList = new LinkedHashMap<>();
     private final DBManager dbManager;
     private Integer mapId;
     private Integer won;
 
-    private DBHandler() {
+    private DBGame() {
         dbManager = new DBManager("res/gameDB.db");
     }
 
-    public static DBHandler getInstance() {
+    public static DBGame getInstance() {
         if (instance == null)
-            instance = new DBHandler();
+            instance = new DBGame();
         return instance;
     }
 
-    public static boolean isInstanceIsNull() {
+    public static boolean isInstanceNull() {
         return instance == null;
     }
 
@@ -98,7 +98,7 @@ public class DBHandler {
     }
 
     public void updateLevel() {
-        String command = String.format("UPDATE current_map SET map_id = %d;", Game.currentMapNumber);
+        String command = String.format("UPDATE current_map SET map_id = %d, won = 0;", Game.currentMapNumber);
         dbManager.executeUpdate(command);
         loadLevel();
     }

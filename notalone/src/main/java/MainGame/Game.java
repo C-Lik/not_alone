@@ -1,7 +1,7 @@
 package MainGame;
 
 import Audio.SoundLibrary;
-import Database.DBHandler;
+import Database.DBGame;
 import GameState.GameState;
 import GameState.MenuOption;
 import GameState.MenuState;
@@ -29,7 +29,6 @@ public class Game implements Runnable {
     public GameState state;
     private boolean runState;
     private Thread gameThread;
-    private BufferStrategy bs;
 
     private Game() {
         window = new GameWindow("Not Alone", WIDTH, HEIGHT);
@@ -65,7 +64,7 @@ public class Game implements Runnable {
         if (!runState) {
             runState = true;
             gameThread = new Thread(this);
-            gameThread.start(); // it will call run function
+            gameThread.start();
         }
     }
 
@@ -75,8 +74,9 @@ public class Game implements Runnable {
 
             SoundLibrary.closeSounds();
 
-            if (DBHandler.isInstanceIsNull())
-                DBHandler.getInstance().close();
+            if (!DBGame.isInstanceNull()) {
+                DBGame.getInstance().close();
+            }
 
             try {
                 gameThread.join();
@@ -91,20 +91,20 @@ public class Game implements Runnable {
     }
 
     private void draw() {
-        bs = window.getCanvas().getBufferStrategy();
+        BufferStrategy bs = window.getCanvasBufferStrategy();
         if (bs == null) {
             try {
-                window.getCanvas().createBufferStrategy(3);
-                return;
+                window.createCanvasBufferStrategy(3);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            return;
         }
 
         g = bs.getDrawGraphics();
         g.clearRect(0, 0, WIDTH, HEIGHT);
 
-        window.getFrame().requestFocusInWindow();
+        window.requestWindowFocus();
         state.draw(g);
 
         bs.show();

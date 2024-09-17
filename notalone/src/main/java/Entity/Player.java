@@ -186,7 +186,7 @@ public class Player extends Entity {
         hitBox.y = (int) y;
         lifeBox.x = hitBox.x + facing * 5;
         lifeBox.y = hitBox.y - 20;
-        playerPosition = Math.abs(camera.getCamera()) + hitBox.x;
+        playerPosition = Math.abs(camera.getCameraXAxis()) + hitBox.x;
     }
 
     //! \brief Increase the position on the Y-axis, set \ref jumping and \ref falling.
@@ -215,7 +215,7 @@ public class Player extends Entity {
         // if we press no button
         if (KeyHandler.leftPressed && KeyHandler.rightPressed ||
                 !KeyHandler.leftPressed && !KeyHandler.rightPressed)
-            velocityX *= 0.8;
+            velocityX *= 0.8F;
         else if (!attacking) {
             if (KeyHandler.leftPressed) {
                 velocityX--;
@@ -282,10 +282,10 @@ public class Player extends Entity {
     private void saveLastSafePosition() {
         // determining the last safe position
         if (!falling && !jumping) {
-            if (camera.getCamera() == 0)
+            if (camera.getCameraXAxis() == 0)
                 lastSafePositionX = playerPosition;
             else {
-                lastSafePositionX = camera.getCamera();
+                lastSafePositionX = camera.getCameraXAxis();
                 lastFacing = facing;
             }
             lastSafePositionY = hitBox.y;
@@ -294,7 +294,7 @@ public class Player extends Entity {
 
     //! \brief Reset the player's position to the last safe position.
     public void resetPosition() {
-        if (camera.getCamera() == 0)
+        if (camera.getCameraXAxis() == 0)
             x = initialPlayerPosition[0];
         else
             camera.setCamera(lastSafePositionX + lastFacing * hitBox.width / 2);

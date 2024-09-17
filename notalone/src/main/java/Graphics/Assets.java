@@ -68,13 +68,13 @@ public class Assets {
         hellDog = new Image("/items/hellDog.png");
         portalSprite = new Image("/items/portal.png");
 
-        potions[0] = Image.LoadImage("/items/potions/potion1.png");
-        potions[1] = Image.LoadImage("/items/potions/potion2.png");
+        potions[0] = Image.loadImage("/items/potions/potion1.png");
+        potions[1] = Image.loadImage("/items/potions/potion2.png");
 
-        menu = Image.LoadImage("/textures/states/menu.png");
-        help = Image.LoadImage("/textures/states/help.png");
-        win = Image.LoadImage("/textures/states/win.png");
-        lost = Image.LoadImage("/textures/states/lost.png");
+        menu = Image.loadImage("/textures/states/menu.png");
+        help = Image.loadImage("/textures/states/help.png");
+        win = Image.loadImage("/textures/states/win.png");
+        lost = Image.loadImage("/textures/states/lost.png");
         getAssets();
     }
 

@@ -18,7 +18,7 @@ public abstract class Enemy extends Entity {
 
     //! \brief Constructor that sets the position of the enemy.
     public void updatePosition() {
-        hitBox.x = (int) (camera.getCamera() + this.x);
+        hitBox.x = (int) (camera.getCameraXAxis() + this.x);
         lifeBox.x = hitBox.x;
     }
 

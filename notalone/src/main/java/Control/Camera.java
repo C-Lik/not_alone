@@ -68,7 +68,7 @@ public class Camera {
     }
 
     //! \brief Retrieves the camera position on the X-axis.
-    public int getCamera() {
+    public int getCameraXAxis() {
         return cameraX;
     }
 
