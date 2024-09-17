@@ -20,8 +20,8 @@ public class GameWindow {
         \brief Parameterized constructor.
 
         Creates a new Canvas for rendering, sets its preferred, maximum, and minimum size, and adds a mouse
-        event listener. Sets the properties of the game window such as size, title, closing behavior, resizability,
-        and visibility. Adds the created canvas, a keyboard event listener, and a window closing listener that
+        event listener. Sets the properties of the game window such as size, title, closing, resize and visibility
+        behavior. Adds the created canvas, a keyboard event listener, and a window closing listener that
         calls the \ref Game.stopGame() function to stop the game.
 
         @param title - a string representing the window title;

@@ -6,6 +6,8 @@ import Graphics.Assets;
 
 import java.awt.*;
 
+import static Entity.EntityAction.*;
+
 /*!
     \brief Implements the Goblin enemy.
 
@@ -30,12 +32,12 @@ public class Goblin extends Enemy {
         life = 110;
         hitPower = -25;
         Assets tempA = Assets.getInstance();
-        animation.put("runR", new Animation(3, tempA.goblin_runR));
-        animation.put("runL", new Animation(3, tempA.goblin_runL));
-        animation.put("hitR", new Animation(4, tempA.goblin_hitR));
-        animation.put("hitL", new Animation(4, tempA.goblin_hitL));
-        animation.put("attackR", new Animation(4, tempA.goblin_attackR));
-        animation.put("attackL", new Animation(4, tempA.goblin_attackL));
+        animation.put(runR, new Animation(3, tempA.goblin_runR));
+        animation.put(runL, new Animation(3, tempA.goblin_runL));
+        animation.put(hitR, new Animation(4, tempA.goblin_hitR));
+        animation.put(hitL, new Animation(4, tempA.goblin_hitL));
+        animation.put(attackR, new Animation(4, tempA.goblin_attackR));
+        animation.put(attackL, new Animation(4, tempA.goblin_attackL));
         resetVelocityX();
     }
 
@@ -75,22 +77,21 @@ public class Goblin extends Enemy {
     public void draw(Graphics g) {
 
         if (gotHit) {
-            if (facing == 1)
-                animation.get("hitR").drawAnimation(g, hitBox.x - 20, hitBox.y + 5, 112, 95);
+            if (isFacingRight())
+                animation.get(hitR).drawAnimation(g, hitBox.x - 20, hitBox.y + 5, 112, 95);
             else
-                animation.get("hitL").drawAnimation(g, hitBox.x - 30, hitBox.y + 5, 112, 95);
+                animation.get(hitL).drawAnimation(g, hitBox.x - 30, hitBox.y + 5, 112, 95);
         } else if (attacking) {
-            if (facing == 1)
-                animation.get("attackR").drawAnimation(g, hitBox.x - 96, hitBox.y - 3, 208, 103);
+            if (isFacingRight())
+                animation.get(attackR).drawAnimation(g, hitBox.x - 96, hitBox.y - 3, 208, 103);
             else
-                animation.get("attackL").drawAnimation(g, hitBox.x - 64, hitBox.y - 3, 208, 103);
+                animation.get(attackL).drawAnimation(g, hitBox.x - 64, hitBox.y - 3, 208, 103);
         } else {
-            if (facing == 1)
-                animation.get("runR").drawAnimation(g, hitBox.x - 10, hitBox.y + 5, 96, 95);
+            if (isFacingRight())
+                animation.get(runR).drawAnimation(g, hitBox.x - 10, hitBox.y + 5, 96, 95);
             else
-                animation.get("runL").drawAnimation(g, hitBox.x - 30, hitBox.y + 5, 96, 95);
+                animation.get(runL).drawAnimation(g, hitBox.x - 30, hitBox.y + 5, 96, 95);
         }
         drawLifeBox(g);
     }
-
 }

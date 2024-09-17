@@ -8,7 +8,7 @@ package Exceptions;
 public class CriticalExceptionHandler {
 
     public static void handle(Exception e) {
-        WriteErrorInFile.writeError(e);
+        ErrorHandler.writeErrorToFile(e);
         System.exit(-1);
     }
 }

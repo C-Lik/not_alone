@@ -32,10 +32,10 @@ public class GameElements {
     public static DBGame dbGame;
     private final Map map;
     private final Collision collCheck;
-    public Player player;
+    public final Player player;
     public Portal portal;
-    public CopyOnWriteArrayList<ItemBlock> items = new CopyOnWriteArrayList<>();
-    public CopyOnWriteArrayList<Enemy> enemies = new CopyOnWriteArrayList<>();
+    public final CopyOnWriteArrayList<ItemBlock> items = new CopyOnWriteArrayList<>();
+    public final CopyOnWriteArrayList<Enemy> enemies = new CopyOnWriteArrayList<>();
     public boolean hitPortal = false;
 
    public GameElements() {

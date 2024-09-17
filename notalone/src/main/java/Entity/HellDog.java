@@ -6,6 +6,8 @@ import Graphics.Animation;
 
 import java.awt.*;
 
+import static Entity.EntityAction.*;
+
 /*!
     \brief Implements the HellDog enemy.
 
@@ -33,10 +35,10 @@ public class HellDog extends Enemy {
         life = 60;
         hitPower = -10;
         Assets tempA = Assets.getInstance();
-        animation.put("runR", new Animation(2, tempA.dog_runR));
-        animation.put("runL", new Animation(2, tempA.dog_runL));
-        animation.put("idleR", new Animation(4, tempA.dog_idleR));
-        animation.put("idleL", new Animation(4, tempA.dog_idleL));
+        animation.put(runR, new Animation(2, tempA.dog_runR));
+        animation.put(runL, new Animation(2, tempA.dog_runL));
+        animation.put(idleR, new Animation(4, tempA.dog_idleR));
+        animation.put(idleL, new Animation(4, tempA.dog_idleL));
         resetVelocityX();
     }
 
@@ -77,15 +79,15 @@ public class HellDog extends Enemy {
         int distance = hitBox.height - 32 * scale;
 
         if (gotHit || attacking) {
-            if (facing == 1)
-                animation.get("idleR").drawAnimation(g, hitBox.x - 16 * scale, hitBox.y + distance, 64 * scale, 32 * scale);
+            if (isFacingRight())
+                animation.get(idleR).drawAnimation(g, hitBox.x - 16 * scale, hitBox.y + distance, 64 * scale, 32 * scale);
             else
-                animation.get("idleL").drawAnimation(g, hitBox.x - 16 * scale, hitBox.y + distance, 64 * scale, 32 * scale);
+                animation.get(idleL).drawAnimation(g, hitBox.x - 16 * scale, hitBox.y + distance, 64 * scale, 32 * scale);
         } else {
-            if (facing == 1)
-                animation.get("runR").drawAnimation(g, hitBox.x - 16 * scale, hitBox.y + distance, 67 * scale, 32 * scale);
+            if (isFacingRight())
+                animation.get(runR).drawAnimation(g, hitBox.x - 16 * scale, hitBox.y + distance, 67 * scale, 32 * scale);
             else
-                animation.get("runL").drawAnimation(g, hitBox.x - 16 * scale, hitBox.y + distance, 67 * scale, 32 * scale);
+                animation.get(runL).drawAnimation(g, hitBox.x - 16 * scale, hitBox.y + distance, 67 * scale, 32 * scale);
         }
         drawLifeBox(g);
     }

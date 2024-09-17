@@ -8,6 +8,6 @@ package Exceptions;
 public class NotCriticalExceptionHandler {
 
     public static void handle(Exception e) {
-        WriteErrorInFile.writeError(e);
+        ErrorHandler.writeErrorToFile(e);
     }
 }

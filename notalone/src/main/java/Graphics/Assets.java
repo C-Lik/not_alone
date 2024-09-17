@@ -11,13 +11,6 @@ import java.awt.image.BufferedImage;
 public class Assets {
 
     private static Assets instance = null;
-
-    Image player;
-    Image goblin;
-    Image ghoul;
-    Image hellDog;
-    Image portalSprite;
-
     public final BufferedImage[] player_idleR = new BufferedImage[8];
     public final BufferedImage[] player_idleL = new BufferedImage[8];
     public final BufferedImage[] player_runR = new BufferedImage[8];
@@ -32,29 +25,29 @@ public class Assets {
     public final BufferedImage[] player_hitR = new BufferedImage[3];
     public final BufferedImage[] player_deathR = new BufferedImage[7];
     public final BufferedImage[] player_deathL = new BufferedImage[7];
-
     public final BufferedImage[] goblin_attackR = new BufferedImage[8];
     public final BufferedImage[] goblin_attackL = new BufferedImage[8];
     public final BufferedImage[] goblin_runR = new BufferedImage[8];
     public final BufferedImage[] goblin_runL = new BufferedImage[8];
     public final BufferedImage[] goblin_hitR = new BufferedImage[4];
     public final BufferedImage[] goblin_hitL = new BufferedImage[4];
-
     public final BufferedImage[] ghoul_walkR = new BufferedImage[8];
     public final BufferedImage[] ghoul_walkL = new BufferedImage[8];
-
     public final BufferedImage[] dog_runR = new BufferedImage[5];
     public final BufferedImage[] dog_runL = new BufferedImage[5];
     public final BufferedImage[] dog_idleR = new BufferedImage[6];
     public final BufferedImage[] dog_idleL = new BufferedImage[6];
-
     public final BufferedImage[] potions = new BufferedImage[2];
     public final BufferedImage[] portal = new BufferedImage[8];
-
     public final BufferedImage menu;
     public final BufferedImage help;
     public final BufferedImage win;
     public final BufferedImage lost;
+    private final Image player;
+    private final Image goblin;
+    private final Image ghoul;
+    private final Image hellDog;
+    private final Image portalSprite;
 
     /*!
         \brief Private constructor
@@ -76,6 +69,12 @@ public class Assets {
         win = Image.loadImage("/textures/states/win.png");
         lost = Image.loadImage("/textures/states/lost.png");
         getAssets();
+    }
+
+    //! \brief Gets the class instance
+    public static Assets getInstance() {
+        if (instance == null) instance = new Assets();
+        return instance;
     }
 
     //! \brief Sets the images arrays
@@ -140,12 +139,5 @@ public class Assets {
             dog_runL[length - i - 1] = hellDog.crop(i * 67, 96, 67, 32);
         }
 
-    }
-
-    //! \brief Gets the class instance
-    public static Assets getInstance() {
-        if (instance == null)
-            instance = new Assets();
-        return instance;
     }
 }

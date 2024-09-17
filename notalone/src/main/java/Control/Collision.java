@@ -46,12 +46,12 @@ public class Collision {
         player.setVelocityY(player.getVelocityY() + GRAVITY);
 
         // horizontal collision
-        player.getHitBox().x += player.getVelocityX();
+        player.getHitBox().x += (int) player.getVelocityX();
         for (Block block : Map.gameMap) {
             if (player.getHitBox().intersects(block.hitBox)) {
-                player.getHitBox().x -= player.getVelocityX();
+                player.getHitBox().x -= (int) player.getVelocityX();
                 while (!block.hitBox.intersects(player.getHitBox())) {
-                    player.getHitBox().x += Math.signum(player.getVelocityX());
+                    player.getHitBox().x += (int) Math.signum(player.getVelocityX());
                 }
                 player.setVelocityX(0);
                 player.getHitBox().x = (int) player.getX();
@@ -60,15 +60,15 @@ public class Collision {
         }
 
         // vertical collision
-        player.getHitBox().y += player.getVelocityY();
+        player.getHitBox().y += (int) player.getVelocityY();
 
         for (Block block : Map.gameMap) {
             if (player.getHitBox().intersects(block.hitBox)) {
-                player.getHitBox().y -= player.getVelocityY();
+                player.getHitBox().y -= (int) player.getVelocityY();
                 while (!block.hitBox.intersects(player.getHitBox())) {
-                    player.getHitBox().y += Math.signum(player.getVelocityY());
+                    player.getHitBox().y += (int) Math.signum(player.getVelocityY());
                 }
-                player.getHitBox().y -= Math.signum(player.getVelocityY());
+                player.getHitBox().y -= (int) Math.signum(player.getVelocityY());
                 player.setVelocityY(0);
                 player.setY(player.getHitBox().y);
                 player.setFalling(false);

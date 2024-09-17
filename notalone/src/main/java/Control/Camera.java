@@ -1,8 +1,8 @@
 package Control;
 
 import Entity.Player;
-import MainGame.Game;
 import Graphics.Map;
+import MainGame.Game;
 
 /*!
     \brief The relative positions of elements
@@ -29,16 +29,16 @@ public class Camera {
         cameraX = 0;
     }
 
-    //! \brief Sets the start camera position on the X-axis.
-    public void setStartCamPos() {
-        startCamPos = Game.WIDTH / 2 - Player.getInstance().getHitBox().width / 2;
-    }
-
     //! \brief Gets the class instance.
     public static Camera getInstance() {
         if (instance == null)
             instance = new Camera();
         return instance;
+    }
+
+    //! \brief Sets the start camera position on the X-axis.
+    public void setStartCamPos() {
+        startCamPos = Game.WIDTH / 2 - Player.getInstance().getHitBox().width / 2;
     }
 
     /*!
@@ -48,17 +48,16 @@ public class Camera {
 
      \param player - The Player object.
      */
-
     public void stopCamera(Player player) {
         if ((int) player.getX() >= startCamPos && cameraX <= 0) {
             if (cameraX >= -(Map.worldWidth - Game.WIDTH - player.getHitBox().width / 2))
-                cameraX -= player.getVelocityX();
+                cameraX -= (int) player.getVelocityX();
             else {
                 // if we reached the end of the map
                 player.setX(player.getX() + player.getVelocityX());
                 if (player.getX() < startCamPos) {
                     player.setX(startCamPos);
-                    cameraX -= player.getVelocityX();
+                    cameraX -= (int) player.getVelocityX();
                 }
             }
         } else {
@@ -73,7 +72,7 @@ public class Camera {
     }
 
     //! \brief Sets the camera position.
-    public void setCamera(int value) {
+    public void setCameraXValue(int value) {
         cameraX = value;
     }
 }

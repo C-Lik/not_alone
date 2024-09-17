@@ -10,6 +10,10 @@ import MainGame.Game;
 import java.awt.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static Entity.EntityAction.*;
+import static Entity.EntityOrientation.left;
+import static Entity.EntityOrientation.right;
+
 /*!
     \brief Implements the Player entity.
 
@@ -18,33 +22,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class Player extends Entity {
 
+    private final static int[] initialPlayerPosition = {100, 200};
     private static Player instance = null;
     private final Collision collCheck;
-
-    private final int[] initialPlayerPosition = {100, 200};
-
-    private long startTimeAnimation;
-    private int MAX_ATTACK_NUMBER, attackNumberCounter,
-            playerPosition, lastSafePositionX, lastSafePositionY, lastFacing, seconds;
-    private float velocityY = 0;
-    private boolean falling, jumping;
     private final CopyOnWriteArrayList<Long> startTimeAttack = new CopyOnWriteArrayList<>();
     private final Rectangle attackBox;
+    private long startTimeAnimation;
+    private int MAX_ATTACK_NUMBER = 4;
+    private int attackNumberCounter,
+            playerPosition, lastSafePositionX, lastSafePositionY, seconds;
+    private EntityOrientation lastFacing;
+    private float velocityY = 0;
+    private boolean falling, jumping;
 
-    /*! \brief Constructor.
-
-      - Sets:
-          \li the initial position in the map;
-          \li the dimensions of the entity and hitBox;;
-          \li the attack power;
-          \li the health;
-          \li the number of attacks;
-          \li the initial number of seconds after which the number of attacks is recharged;
-      - Create the list of animations.
-   */
     private Player() {
 
-        super(100, 200);
+        super(initialPlayerPosition[0], initialPlayerPosition[1]);
 
         hitBox = new Rectangle((int) x, (int) y, 45, 100);
         lifeBox = new Rectangle((int) x, (int) y, 45, 5);
@@ -54,25 +47,24 @@ public class Player extends Entity {
         attackBox = new Rectangle(0, 0, 180, 150);
         life = 100;
         hitPower = -20;
-        MAX_ATTACK_NUMBER = 4;
         attackNumberCounter = MAX_ATTACK_NUMBER;
         seconds = 5;
 
         Assets tempA = Assets.getInstance();
-        animation.put("idleR", new Animation(4, tempA.player_idleR));
-        animation.put("idleL", new Animation(4, tempA.player_idleL));
-        animation.put("runR", new Animation(3, tempA.player_runR));
-        animation.put("runL", new Animation(3, tempA.player_runL));
-        animation.put("attackR", new Animation(4, tempA.player_attackR));
-        animation.put("attackL", new Animation(4, tempA.player_attackL));
-        animation.put("jumpR", new Animation(2, tempA.player_jumpR));
-        animation.put("jumpL", new Animation(2, tempA.player_jumpL));
-        animation.put("fallR", new Animation(2, tempA.player_fallR));
-        animation.put("fallL", new Animation(2, tempA.player_fallL));
-        animation.put("hitR", new Animation(3, tempA.player_hitR));
-        animation.put("hitL", new Animation(3, tempA.player_hitL));
-        animation.put("deathR", new Animation(2, tempA.player_deathR));
-        animation.put("deathL", new Animation(2, tempA.player_deathL));
+        animation.put(idleR, new Animation(4, tempA.player_idleR));
+        animation.put(idleL, new Animation(4, tempA.player_idleL));
+        animation.put(runR, new Animation(3, tempA.player_runR));
+        animation.put(runL, new Animation(3, tempA.player_runL));
+        animation.put(attackR, new Animation(4, tempA.player_attackR));
+        animation.put(attackL, new Animation(4, tempA.player_attackL));
+        animation.put(jumpR, new Animation(2, tempA.player_jumpR));
+        animation.put(jumpL, new Animation(2, tempA.player_jumpL));
+        animation.put(fallR, new Animation(2, tempA.player_fallR));
+        animation.put(fallL, new Animation(2, tempA.player_fallL));
+        animation.put(hitR, new Animation(3, tempA.player_hitR));
+        animation.put(hitL, new Animation(3, tempA.player_hitL));
+        animation.put(deathR, new Animation(2, tempA.player_deathR));
+        animation.put(deathL, new Animation(2, tempA.player_deathL));
     }
 
     //! \brief Gets the class instance.
@@ -83,22 +75,6 @@ public class Player extends Entity {
         return instance;
     }
 
-    /*!
-        \brief Update.
-
-        Call the following methods:
-        - \ref setFacingAndUpdateVelocityX();
-        - \ref checkIfFallInVoid();
-        - \ref collCheck.checkCollisionTile(this);
-        - \ref camera.stopCamera(this);
-        - \ref setJumpFallAndUpdateVelocityY();
-        - \ref attack();
-        - \ref updateStamina();
-        - \ref setPosition();
-        - \ref saveLastSafePosition();
-        - \ref updateLifeBox();
-        - \ref runAnimations();
-     */
     @Override
     public void update() {
         setFacingAndUpdateVelocityX();
@@ -123,43 +99,43 @@ public class Player extends Entity {
             attacking = false;
         } else {
             yPos = hitBox.y - 100; // - 100 = hitBox(100) - 200
-            if (facing == 1)
-                animation.get("attackR").drawAnimation(g, hitBox.x - 64, yPos, 320, 200);
+            if (isFacingRight())
+                animation.get(EntityAction.attackR).drawAnimation(g, hitBox.x - 64, yPos, 320, 200);
             else
-                animation.get("attackL").drawAnimation(g, hitBox.x - 208, yPos, 320, 200);
+                animation.get(EntityAction.attackL).drawAnimation(g, hitBox.x - 208, yPos, 320, 200);
         }
 
         if (!attacking) {
             if (jumping) {
                 yPos = hitBox.y - 61; // - 61 = hitBox(100) - 161
-                if (facing == 1)
-                    animation.get("jumpR").drawAnimation(g, hitBox.x - 55, yPos, 144, 161);
+                if (isFacingRight())
+                    animation.get(jumpR).drawAnimation(g, hitBox.x - 55, yPos, 144, 161);
                 else
-                    animation.get("jumpL").drawAnimation(g, hitBox.x - 38, yPos, 144, 161);
+                    animation.get(jumpL).drawAnimation(g, hitBox.x - 38, yPos, 144, 161);
             } else if (isFalling()) {
                 yPos = hitBox.y - 84; // - 84 = hitBox(100) - 184
-                if (facing == 1)
-                    animation.get("fallR").drawAnimation(g, hitBox.x - 15, yPos, 128, 184);
+                if (isFacingRight())
+                    animation.get(fallR).drawAnimation(g, hitBox.x - 15, yPos, 128, 184);
                 else
-                    animation.get("fallL").drawAnimation(g, hitBox.x - 65, yPos, 128, 184);
+                    animation.get(fallL).drawAnimation(g, hitBox.x - 65, yPos, 128, 184);
             } else if (velocityX != 0) {
                 yPos = hitBox.y - 28; // - 28 = hitBox(100) - 128
-                if (facing == 1)
-                    animation.get("runR").drawAnimation(g, hitBox.x - 42, yPos, 128, 128);
+                if (isFacingRight())
+                    animation.get(runR).drawAnimation(g, hitBox.x - 42, yPos, 128, 128);
                 else
-                    animation.get("runL").drawAnimation(g, hitBox.x - 42, yPos, 128, 128);
+                    animation.get(runL).drawAnimation(g, hitBox.x - 42, yPos, 128, 128);
             } else if (gotHit) {
                 yPos = hitBox.y - 77;
-                if (facing == 1)
-                    animation.get("hitR").drawAnimation(g, hitBox.x, yPos, 96, 177);
+                if (isFacingRight())
+                    animation.get(hitR).drawAnimation(g, hitBox.x, yPos, 96, 177);
                 else
-                    animation.get("hitL").drawAnimation(g, hitBox.x - 35, yPos, 96, 177);
+                    animation.get(hitL).drawAnimation(g, hitBox.x - 35, yPos, 96, 177);
             } else {
                 yPos = hitBox.y - 100;
-                if (facing == 1)
-                    animation.get("idleR").drawAnimation(g, hitBox.x, yPos, 112, 200);
+                if (isFacingRight())
+                    animation.get(idleR).drawAnimation(g, hitBox.x, yPos, 112, 200);
                 else
-                    animation.get("idleL").drawAnimation(g, hitBox.x - 65, yPos, 112, 200);
+                    animation.get(idleL).drawAnimation(g, hitBox.x - 65, yPos, 112, 200);
             }
         }
         drawLifeBox(g);
@@ -184,7 +160,7 @@ public class Player extends Entity {
     private void setPosition() {
         hitBox.x = (int) x;
         hitBox.y = (int) y;
-        lifeBox.x = hitBox.x + facing * 5;
+        lifeBox.x = hitBox.x + facing.getValue() * 5;
         lifeBox.y = hitBox.y - 20;
         playerPosition = Math.abs(camera.getCameraXAxis()) + hitBox.x;
     }
@@ -219,10 +195,10 @@ public class Player extends Entity {
         else if (!attacking) {
             if (KeyHandler.leftPressed) {
                 velocityX--;
-                facing = -1;
+                facing = left;
             } else {
                 velocityX++;
-                facing = 1;
+                facing = right;
             }
         }
 
@@ -249,7 +225,7 @@ public class Player extends Entity {
             if (velocityX == 0 && !jumping && !falling && !attacking && attackNumberCounter != 0) {
                 setAttacking(true);
                 SoundLibrary.playerAttack.play();
-                if (facing == 1) {
+                if (isFacingRight()) {
                     attackBox.x = hitBox.x + hitBox.width;
                 } else {
                     attackBox.x = hitBox.x - attackBox.width;
@@ -297,13 +273,12 @@ public class Player extends Entity {
         if (camera.getCameraXAxis() == 0)
             x = initialPlayerPosition[0];
         else
-            camera.setCamera(lastSafePositionX + lastFacing * hitBox.width / 2);
-
+            camera.setCameraXValue(lastSafePositionX + lastFacing.getValue() * hitBox.width / 2);
         y = lastSafePositionY;
         playerPosition = initialPlayerPosition[0];
         velocityX = 0;
         velocityY = 0;
-        facing = 1;
+        facing = right;
     }
 
     //! \brief Reset the player to the main characteristics.
@@ -317,16 +292,11 @@ public class Player extends Entity {
         hitPower = -20;
         x = initialPlayerPosition[0];
         y = initialPlayerPosition[1];
-        camera.setCamera(0);
+        camera.setCameraXValue(0);
         playerPosition = initialPlayerPosition[0];
         velocityX = 0;
         velocityY = 0;
-        facing = 1;
-    }
-
-    //! \brief Return the position on the Y-axis.
-    public float getY() {
-        return y;
+        facing = right;
     }
 
     //! \brief Set the position on the Y-axis.
@@ -349,14 +319,14 @@ public class Player extends Entity {
         return attackBox;
     }
 
-    //! \brief Set the \ref falling flag.
-    public void setFalling(boolean b) {
-        falling = b;
-    }
-
     //! \brief Return the \ref falling flag.
     public boolean isFalling() {
         return falling;
+    }
+
+    //! \brief Set the \ref falling flag.
+    public void setFalling(boolean b) {
+        falling = b;
     }
 
     //! \brief Return the player's relative position.

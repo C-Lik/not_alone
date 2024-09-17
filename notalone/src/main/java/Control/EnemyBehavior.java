@@ -1,6 +1,7 @@
 package Control;
 
 import Entity.Enemy;
+import Entity.EntityOrientation;
 import Entity.Player;
 
 //! \brief Manages the enemies actions.
@@ -38,10 +39,14 @@ public class EnemyBehavior {
                     if (distanceY <= 100) {
                         float vel = enemy.getVelocityX();
                         if (vel <= 3)
-                            vel += 1.5;
-                        enemy.setVelocityX(vel + 1.5f);
+                            vel += 1.5F;
+                        enemy.setVelocityX(vel + 1.5F);
                         // if distance is negative, the player is at right of enemy -> facing = 1
-                        enemy.setFacing(-(int) Math.signum(distanceX));
+                        if (distanceX > 0) {
+                            enemy.setFacing(EntityOrientation.left);
+                        } else {
+                            enemy.setFacing(EntityOrientation.right);
+                        }
                     }
                     enemy.setAttacking(false);
                 }
@@ -52,17 +57,17 @@ public class EnemyBehavior {
         }
 
         // enemy is walking
-        if (enemy.getFacing() == 1) {
+        if (enemy.isFacingRight()) {
             if ((int) (enemy.getX() + enemy.getVelocityX() + enemy.getHitBox().width) < enemy.getBoundRight()) {
                 enemy.setX(enemy.getX() + enemy.getVelocityX());
             } else {
-                enemy.setFacing(-1);
+                enemy.setFacing(EntityOrientation.left);
             }
         } else {
             if ((int) (enemy.getX() - enemy.getVelocityX()) >= enemy.getBoundLeft()) {
                 enemy.setX(enemy.getX() - enemy.getVelocityX());
             } else {
-                enemy.setFacing(1);
+                enemy.setFacing(EntityOrientation.right);
             }
         }
     }

@@ -6,6 +6,10 @@ import Graphics.Assets;
 
 import java.awt.*;
 
+import static Entity.EntityAction.runL;
+import static Entity.EntityAction.runR;
+import static Entity.EntityOrientation.right;
+
 /*!
     \brief Implements the Ghoul enemy.
 
@@ -30,8 +34,8 @@ public class Ghoul extends Enemy {
         life = 100;
         hitPower = -20;
         Assets tempA = Assets.getInstance();
-        animation.put("walkR", new Animation(4, tempA.ghoul_walkR));
-        animation.put("walkL", new Animation(4, tempA.ghoul_walkL));
+        animation.put(runR, new Animation(4, tempA.ghoul_walkR));
+        animation.put(runL, new Animation(4, tempA.ghoul_walkL));
         resetVelocityX();
     }
 
@@ -65,10 +69,10 @@ public class Ghoul extends Enemy {
      */
     @Override
     public void draw(Graphics g) {
-        if (facing == 1)
-            animation.get("walkR").drawAnimation(g, hitBox.x - 20, hitBox.y - 11, 96, 111);
+        if (facing == right)
+            animation.get(runR).drawAnimation(g, hitBox.x - 20, hitBox.y - 11, 96, 111);
         else
-            animation.get("walkL").drawAnimation(g, hitBox.x - 30, hitBox.y - 11, 96, 111);
+            animation.get(runL).drawAnimation(g, hitBox.x - 30, hitBox.y - 11, 96, 111);
         drawLifeBox(g);
     }
 }

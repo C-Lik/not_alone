@@ -1,10 +1,10 @@
 package Entity;
 
-import java.awt.*;
-import java.util.LinkedHashMap;
-
 import Control.Camera;
 import Graphics.Animation;
+
+import java.awt.*;
+import java.util.LinkedHashMap;
 
 /*!
     \brief Entity.
@@ -13,12 +13,13 @@ import Graphics.Animation;
  */
 public abstract class Entity {
 
+    protected static final Camera camera = Camera.getInstance();
+    protected final LinkedHashMap<EntityAction, Animation> animation;
     protected float x, y, velocityX = 0;
     protected boolean attacking, gotHit = false;
-    protected int facing = 1, life, lastLife, hitPower;
+    protected EntityOrientation facing = EntityOrientation.right;
+    protected int life, lastLife, hitPower;
     protected Rectangle hitBox, lifeBox;
-    protected final LinkedHashMap<String, Animation> animation;
-    protected static final Camera camera = Camera.getInstance();
 
     //! \brief Constructor that sets the position and instantiates a list of animations.
     public Entity(float x, float y) {
@@ -36,7 +37,8 @@ public abstract class Entity {
         if (lastLife != life) {
             try {
                 lifeBox.width = life * lifeBox.width / lastLife;
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
             lastLife = life;
         }
     }
@@ -72,19 +74,23 @@ public abstract class Entity {
         return hitBox;
     }
 
-    public void setAttacking(boolean attacking) {
-        this.attacking = attacking;
-    }
-
     public boolean getAttacking() {
         return attacking;
     }
 
-    public int getFacing() {
+    public void setAttacking(boolean attacking) {
+        this.attacking = attacking;
+    }
+
+    public boolean isFacingRight() {
+        return facing == EntityOrientation.right;
+    }
+
+    public EntityOrientation getFacing() {
         return facing;
     }
 
-    public void setFacing(int f) {
+    public void setFacing(EntityOrientation f) {
         facing = f;
     }
 

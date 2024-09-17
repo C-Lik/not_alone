@@ -18,20 +18,13 @@ import java.util.Objects;
 public class Sound {
     private Clip clip;
 
-    //! \brief No-Args constructor
     public Sound() {}
 
-    /*!
-        \brief Parameterized constructor
-
-        Calls the \ref setClip(String) function with the received parameter as argument.
-     */
     public Sound(String fileName) {
         setClip(fileName);
     }
 
     //! \brief Sets and opens a sound with the specified name received as argument.
-
     public void setClip(String fileName) {
         try {
             AudioInputStream ais = AudioSystem.getAudioInputStream(Objects.requireNonNull(getClass().getResourceAsStream("/sounds/" + fileName)));
@@ -47,11 +40,6 @@ public class Sound {
         }
     }
 
-    /*!
-        \brief Play sound.
-
-        If the sound exists then it is stopped and started again, otherwise it returns.
-     */
     public void play() {
         if (clip == null) return;
         stop();
@@ -59,7 +47,6 @@ public class Sound {
         clip.start();
     }
 
-    //! \brief Loops the sound.
     public void loopPlaying() {
         if (clip == null) return;
         if (clip.getFrameLength() == clip.getFramePosition()) {
@@ -69,7 +56,6 @@ public class Sound {
             clip.start();
     }
 
-    //! \brief Loops the sound.
     public void stop() {
         if (clip == null) return;
         if (clip.isRunning())
@@ -77,7 +63,6 @@ public class Sound {
         clip.setFramePosition(0);
     }
 
-    //! \brief Stops the sound.
     public void close() {
         try {
             stop();

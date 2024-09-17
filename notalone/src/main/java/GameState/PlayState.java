@@ -20,7 +20,7 @@ import java.awt.*;
 public class PlayState extends GameState {
 
     private static PlayState instance = null;
-    public GameElements elements;
+    public final GameElements elements;
 
     /*!
         \brief Private constructor.
